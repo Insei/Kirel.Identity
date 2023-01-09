@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace Kirel.Identity.Core.Services;
-
+ 
 /// <summary>
 /// Service for management users and their claims
 /// </summary>

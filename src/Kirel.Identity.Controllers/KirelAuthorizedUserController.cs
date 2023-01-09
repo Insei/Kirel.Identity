@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Kirel.Identity.Controllers;
 
-/// <summary>
+/// <summary> 
 /// Controller for authorized user account management
 /// </summary>
 /// <typeparam name="TAuthorizedUserService">Authorized user service. Must be a descendant of the KirelAuthorizedUserService class</typeparam>

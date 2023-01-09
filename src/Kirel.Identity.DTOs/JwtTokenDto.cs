@@ -6,7 +6,7 @@
 public class JwtTokenDto
 {
     /// <summary>
-    /// Access jwt token
+    /// Access jwt token 
     /// </summary>
     public string AccessToken { get; set; } = "";
     /// <summary>
