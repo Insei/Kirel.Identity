@@ -36,6 +36,8 @@ jobs:
     runs-on: ubuntu-22.04
     strategy:
       fail-fast: false
+      matrix:
+        package: [ DTOs, Core, Controllers ]
     needs: pr_info
     steps:
       - name: Link PR Check
@@ -46,8 +48,8 @@ jobs:
             args = {
               owner: context.repo.owner,
               repo: context.repo.repo,
-              head_sha: ${{ needs.pr_info.outputs.pr_sha }},
-              name: 'NuGet / ' + ${{ matrix.package }} + ' Cleanup',
+              head_sha: "${{ needs.pr_info.outputs.pr_sha }}",
+              name: "NuGet / ${{ matrix.package }} Cleanup",
               status: 'in_progress',
             };
             console.log("Arguments:", args);
@@ -56,7 +58,7 @@ jobs:
             return {
               check_run_id: result.data.id
             };
-      - name: Remove uploaded ${{ matrix.package }} PR versions
+      - name: Remove uploaded PR versions
         env:
           NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
         run: |
