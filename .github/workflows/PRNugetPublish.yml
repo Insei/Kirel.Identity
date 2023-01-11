@@ -15,6 +15,8 @@ jobs:
     runs-on: ubuntu-22.04
     strategy:
       fail-fast: false
+    env:
+      RUN_ID: ${{ github.event.workflow_run.id }}
     steps:
       - name: Download PR code artifact
         id: download-pr-artifact
@@ -28,7 +30,6 @@ jobs:
         run: |
           mkdir pr
           mkdir packages
-          rm -rf Kirel.Identity-DANGER-pr6-*
           mv Kirel.Identity*/src src
           mv Kirel.Identity*/pr* pr
           rm -rf Kirel.Identity*
@@ -55,7 +56,7 @@ jobs:
           GITHUB_CONTEXT: ${{ toJson(github) }}
         run: |
           echo "$GITHUB_CONTEXT"
-      - name: Link PR
+      - name: Link PR Check
         id: pr_check
         uses: actions/github-script@v6
         with:

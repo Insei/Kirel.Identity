@@ -17,7 +17,7 @@ jobs:
         run: |
           mkdir out
           echo "${{ github.event.pull_request.number }}" >> out/pr_number
-          echo -n ${GITHUB_SHA} > out/pr_sha
+          echo -n ${{ github.event.pull_request.head.sha }} > out/pr_sha
       - name: Upload PR cleanup data as artifact
         uses: actions/upload-artifact@v3
         with:
