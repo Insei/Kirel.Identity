@@ -17,6 +17,7 @@ jobs:
       pr_num: ${{ steps.vars.outputs.pr_num }}
       pr_run_num: ${{ steps.vars.outputs.pr_run_num }}
       pr_sha: ${{ steps.vars.outputs.pr_sha }}
+      pr_prefix: ${{ steps.vars.outputs.pr_prefix }}
     steps:
       - name: Download PR clean artifact
         id: download-pr-artifact
@@ -32,6 +33,7 @@ jobs:
           echo "pr_num=$(cat Kirel.Identity*/pr_number)" >> $GITHUB_OUTPUT
           echo "pr_run_num=$(cat Kirel.Identity*/pr_run_number)" >> $GITHUB_OUTPUT
           echo "pr_sha=$(cat Kirel.Identity*/pr_sha)" >> $GITHUB_OUTPUT
+          echo "pr_prefix=-DANGER-pr$(cat Kirel.Identity*/pr_number)-$(cat Kirel.Identity*/pr_run_number)"  >> $GITHUB_OUTPUT
       - name: Replace source code to src dir
         run: |
           mv Kirel.Identity*/src src
@@ -105,8 +107,8 @@ jobs:
       - name: Build
         run: |
           dotnet restore src/Kirel.Identity.${{ matrix.package }}/Kirel.Identity.${{ matrix.package }}.csproj
-          dotnet build --version-suffix ${PR_SUFFIX} src/Kirel.Identity.${{ matrix.package }}/Kirel.Identity.${{ matrix.package }}.csproj
-          dotnet pack -o ./packages --version-suffix ${PR_SUFFIX} src/Kirel.Identity.${{ matrix.package }}/Kirel.Identity.${{ matrix.package }}.csproj
+          dotnet build --version-suffix ${{ needs.pr_info.outputs.pr_prefix }} src/Kirel.Identity.${{ matrix.package }}/Kirel.Identity.${{ matrix.package }}.csproj
+          dotnet pack -o ./packages --version-suffix ${{ needs.pr_info.outputs.pr_prefix }} src/Kirel.Identity.${{ matrix.package }}/Kirel.Identity.${{ matrix.package }}.csproj
       - name: Publish
         env:
           NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
