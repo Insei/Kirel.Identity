@@ -11,8 +11,8 @@ jobs:
     runs-on: ubuntu-22.04
     strategy:
       fail-fast: false
-    matrix:
-      package: [ DTOs, Core, Controllers ]
+      matrix:
+        package: [ DTOs, Core, Controllers ]
     steps:
       - name: Checkout main
         uses: actions/checkout@v3
@@ -20,12 +20,12 @@ jobs:
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: '6.0.x'
-      - name: Build ${{ matrix.package }}
+      - name: Build
         run: |
           dotnet restore src/Kirel.Identity.${{ matrix.package }}/Kirel.Identity.${{ matrix.package }}.csproj
           dotnet build src/Kirel.Identity.${{ matrix.package }}/Kirel.Identity.${{ matrix.package }}.csproj
           dotnet pack -o ./packages src/Kirel.Identity.${{ matrix.package }}/Kirel.Identity.${{ matrix.package }}.csproj
-      - name: Push ${{ matrix.package }}
+      - name: Push
         env:
           NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
         run: |
