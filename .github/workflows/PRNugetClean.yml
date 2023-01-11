@@ -30,7 +30,7 @@ jobs:
           echo "pr_num=$(cat cleanup-pr*/pr_number)" >> $GITHUB_OUTPUT
           echo "pr_sha=$(cat cleanup-pr*/pr_sha)" >> $GITHUB_OUTPUT
   build:
-    name: Remove uploaded PR nuget packages
+    name: Remove nuget package
     permissions:
       checks: write
     runs-on: ubuntu-22.04
@@ -62,7 +62,7 @@ jobs:
         env:
           NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
         run: |
-          versions=$(curl -s https://azuresearch-usnc.nuget.org/query\?q\=packageid:Kirel.Identity.${{ matrix.package }}\&prerelease\=true | jq -r ".data[0].versions[].version" | grep "DANGER-pr${PR_NUM}" || :)
+          versions=$(curl -s https://azuresearch-usnc.nuget.org/query\?q\=packageid:Kirel.Identity.${{ matrix.package }}\&prerelease\=true | jq -r ".data[0].versions[].version" | grep "DANGER-pr${{ needs.pr_info.outputs.pr_num }}" || :)
           for version in $versions 
           do
             dotnet nuget delete Kirel.Identity.${{ matrix.package }} $version --non-interactive -k ${NUGET_API_KEY} -s nuget.org
