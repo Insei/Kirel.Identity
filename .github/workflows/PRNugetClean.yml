@@ -1,0 +1,48 @@
+﻿---
+name: PRNugetClean
+on:
+  workflow_run:
+    workflows:
+      - "PRPreClean"
+    types:
+      - completed
+
+jobs:
+  build:
+    name: Build and publish nuget packages
+    permissions:
+      checks: write
+    runs-on: ubuntu-22.04
+    strategy:
+      fail-fast: false
+    steps:
+      - name: Download PR clean artifact
+        id: download-pr-artifact
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh run --repo ${{ github.repository }} download ${RUN_ID}
+      - name: Display structure of downloaded files
+        run: ls -R
+      - name: Setup env vars
+        run: |
+          echo "PR_NUM=$(cat cleanup-pr*/pr_number)" >> "$GITHUB_ENV"
+      - name: Remove uploaded PR versions
+        env:
+          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+        run: |
+          dtos_versions=$(curl -s https://api.nuget.org/v3-flatcontainer/Kirel.Identity.DTOs/index.json | jq -r '.versions' | jq -r '.[]' | grep "danger-pr${PR_NUM}")
+          core_versions=$(curl -s https://api.nuget.org/v3-flatcontainer/Kirel.Identity.Core/index.json | jq -r '.versions' | jq -r '.[]' | grep "danger-pr${PR_NUM}")
+          controllers_versions=$(curl -s https://api.nuget.org/v3-flatcontainer/Kirel.Identity.Core/index.json | jq -r '.versions' | jq -r '.[]' | grep "danger-pr${PR_NUM}")
+          for version in $dtos_versions 
+          do
+            dotnet nuget delete Kirel.Identity.DTOs $version -k ${NUGET_API_KEY} -s nuget.org
+          done
+          for version in $core_versions 
+          do
+            dotnet nuget delete Kirel.Identity.Core $version -k ${NUGET_API_KEY} -s nuget.org
+          done
+          for version in $controllers_versions
+          do
+            dotnet nuget delete Kirel.Identity.Controllers $version -k ${NUGET_API_KEY} -s nuget.org
+          done
